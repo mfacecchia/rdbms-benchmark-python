@@ -1,0 +1,4 @@
+psycopg
+psycopg[binary,pool]
+
+mysql-connector-python
