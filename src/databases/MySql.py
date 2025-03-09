@@ -1,16 +1,22 @@
-from typing import Any, Dict, List, LiteralString, Union
+from typing import Any, Dict, List, LiteralString
 
 import mysql.connector
-from DatabaseConnection import DatabaseConnection
-from mysql.connector.abstracts import MySQLConnectionAbstract
-from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.types import RowItemType, RowType
 
+from ctyping.mysql import TMySqlConnection
 
-class MySql(DatabaseConnection[Union[PooledMySQLConnection, MySQLConnectionAbstract]]):
+from .DatabaseConnection import DatabaseConnection
+
+
+class MySql(DatabaseConnection[TMySqlConnection]):
+    _conn: TMySqlConnection | None
+
+    def __init__(self):
+        self._conn = None
+
     def execute(
         self,
-        conn: Union[PooledMySQLConnection, MySQLConnectionAbstract],
+        conn: TMySqlConnection,
         query: LiteralString,
         table_name: str,
         fields: list[str],
@@ -26,7 +32,9 @@ class MySql(DatabaseConnection[Union[PooledMySQLConnection, MySQLConnectionAbstr
             if get_query_result:
                 return cur.fetchall()
 
-    def connect(self) -> Union[PooledMySQLConnection, MySQLConnectionAbstract]:
-        return mysql.connector.connect(
-            host="localhost", port="3306", user="root", database="rdbms_benchmark"
-        )
+    def connect(self) -> TMySqlConnection:
+        if self._conn is None:
+            self._conn = mysql.connector.connect(
+                host="localhost", port="3306", user="root", database="rdbms_benchmark"
+            )
+        return self._conn
