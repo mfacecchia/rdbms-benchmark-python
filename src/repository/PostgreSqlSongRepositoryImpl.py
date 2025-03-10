@@ -7,7 +7,7 @@ from repository.SongRepository import SongRepository
 from utils.DbUtil import DbUtil
 
 
-class PostgreSqlRepositoryImpl(SongRepository):
+class PostgreSqlSongRepositoryImpl(SongRepository):
     def find_all(self, conn: DatabaseConnection[TPostgreSqlConnection]) -> List[Song]:
         query: str = "SELECT * FROM {table};"
         return conn.execute(conn.connect(), query, "song", [], [], True)
