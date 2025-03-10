@@ -1,10 +1,10 @@
-import os
 from typing import List
 
 import requests
 from requests.exceptions import HTTPError
 
 from models.Song import Song
+from utils.Environment import Environment
 
 
 class SongsUtil:
@@ -19,7 +19,7 @@ class SongsUtil:
         playlist_id = "6yPiKpy7evrwvZodByKvM9"
         offset = page
         host = "spotify23.p.rapidapi.com"
-        api_key = os.getenv("RAPIDAPI-SPOTIFY-KEY")
+        api_key = Environment.get_environment_variable("RAPIDAPI-SPOTIFY-KEY")
         limit = songs_count
         res = requests.get(
             str.format(
