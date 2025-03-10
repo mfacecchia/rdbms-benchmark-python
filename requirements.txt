@@ -4,3 +4,5 @@ psycopg[binary,pool]
 mysql-connector-python
 
 requests
+
+dotenv
