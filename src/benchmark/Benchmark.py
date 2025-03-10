@@ -15,13 +15,21 @@ class Benchmark:
         self._results = {}
 
     def begin_benchmark(self):
+        print("Beginning benchmark...")
         songs: List[Song] = self.__fetch_entries()
         for service in self._services:
+            print(
+                "Benchmarking {provider} provider...".format(
+                    provider=self.__get_provider(service)
+                )
+            )
             self.__benchmark_creation(service, songs)
             self.__benchmark_fetch(service)
             self.__benchmark_delete(service)
+            print("Done.")
 
     def __benchmark_creation(self, service: SongService, songs: List[Song]) -> None:
+        print("Adding entries...")
         start = self.__get_current_microseconds_time()
         for song in songs:
             service.save(song)
@@ -30,8 +38,10 @@ class Benchmark:
         self._results.setdefault(
             "Creation-provider-{0}".format(self.__get_provider(service)), result
         )
+        print("Done.")
 
     def __benchmark_delete(self, service: SongService) -> None:
+        print("Deleting entries...")
         start = self.__get_current_microseconds_time()
         service.delete_all()
         end = self.__get_current_microseconds_time()
@@ -39,16 +49,19 @@ class Benchmark:
         self._results.setdefault(
             "Deletion-provider-{0}".format(self.__get_provider(service)), result
         )
+        print("Done.")
 
     def __benchmark_fetch(self, service: SongService) -> None:
+        print("Fetching entries...")
         start = self.__get_current_microseconds_time()
         entries = service.find_all()
         end = self.__get_current_microseconds_time()
-        print("Fetched {0} entries".format(len(entries)))
         result = self.__calculate_elapsed_time(start, end)
         self._results.setdefault(
             "Fetch-provider-{0}".format(self.__get_provider(service)), result
         )
+        print("Done.")
+        print("Fetched {0} entries".format(len(entries)))
 
     def __get_current_microseconds_time(self) -> float:
         return perf_counter()
