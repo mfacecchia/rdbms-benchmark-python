@@ -3,6 +3,11 @@ from typing import Any, LiteralString
 
 
 class DatabaseConnection[T]:
+    _db_name: str
+
+    def __init__(self, db_name: str):
+        self._db_name = db_name
+
     @abstractmethod
     def execute(
         self,
@@ -18,3 +23,6 @@ class DatabaseConnection[T]:
     @abstractmethod
     def connect(self) -> T:
         pass
+
+    def get_db_name(self) -> str:
+        return self._db_name
