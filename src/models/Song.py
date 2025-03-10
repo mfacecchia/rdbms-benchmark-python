@@ -5,6 +5,13 @@ class Song:
     _is_explicit: bool
     _duration: int
 
+    def __init__(self):
+        self._id = 0
+        self._title = ""
+        self._artist_name = ""
+        self._is_explicit = False
+        self._duration = 0
+
     def get_id(self) -> int:
         return self._id
 
