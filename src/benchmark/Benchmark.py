@@ -15,13 +15,11 @@ class Benchmark:
         self._results = {}
 
     def begin_benchmark(self):
-        songs: List[Song] = SongsUtil.fetch_songs()
+        songs: List[Song] = self.__fetch_entries()
         for service in self._services:
             self.__benchmark_creation(service, songs)
             self.__benchmark_fetch(service)
             self.__benchmark_delete(service)
-
-        pass
 
     def __benchmark_creation(self, service: SongService, songs: List[Song]) -> None:
         start = self.__get_current_microseconds_time()
@@ -68,3 +66,7 @@ class Benchmark:
 
     def __get_provider(self, service: SongService) -> str:
         return service.get_conn().get_db_name()
+
+    def __fetch_entries(self) -> List[Song]:
+        print("Fetching entries...")
+        return SongsUtil.fetch_songs(100, 1)
