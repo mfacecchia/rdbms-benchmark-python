@@ -13,6 +13,7 @@ class PostgreSql(DatabaseConnection[TPostgreSqlConnection]):
     _conn: TPostgreSqlConnection | None
 
     def __init__(self):
+        super().__init__("PostgreSql")
         self._conn = None
 
     def execute(

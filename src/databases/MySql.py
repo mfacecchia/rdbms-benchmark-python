@@ -12,6 +12,7 @@ class MySql(DatabaseConnection[TMySqlConnection]):
     _conn: TMySqlConnection | None
 
     def __init__(self):
+        super().__init__("MySql")
         self._conn = None
 
     def execute(
