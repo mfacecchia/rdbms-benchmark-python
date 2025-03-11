@@ -34,10 +34,14 @@ class PostgreSql(DatabaseConnection[TPostgreSqlConnection]):
                 return cur.execute(formattedQuery, data).fetchall()
             cur.execute(formattedQuery, data)
 
-    # TODO: Handle closed connection (side case)
     def connect(self) -> TPostgreSqlConnection:
-        if self._conn is None:
+        if self._conn is None or self._conn.closed:
             self._conn = connect(
                 dbname="rdbms_benchmark", user="feis._.", autocommit=True
             )
         return self._conn
+
+    def close(self) -> None:
+        if self._conn is None:
+            return
+        self._conn.close()

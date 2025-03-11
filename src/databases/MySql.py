@@ -33,9 +33,8 @@ class MySql(DatabaseConnection[TMySqlConnection]):
             if get_query_result:
                 return cur.fetchall()
 
-    # TODO: Handle closed connection (side case)
     def connect(self) -> TMySqlConnection:
-        if self._conn is None:
+        if self._conn is None or self._conn.is_connected:
             self._conn = mysql.connector.connect(
                 host="localhost",
                 port="3306",
@@ -44,3 +43,8 @@ class MySql(DatabaseConnection[TMySqlConnection]):
                 autocommit=True,
             )
         return self._conn
+
+    def close(self) -> None:
+        if self._conn is None:
+            return
+        self._conn.close()
