@@ -24,5 +24,9 @@ class DatabaseConnection[T]:
     def connect(self) -> T:
         pass
 
+    @abstractmethod
+    def close(self) -> None:
+        pass
+
     def get_db_name(self) -> str:
         return self._db_name
