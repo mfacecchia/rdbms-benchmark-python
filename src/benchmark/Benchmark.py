@@ -14,18 +14,26 @@ class Benchmark:
         self._services = services
         self._results = {}
 
-    def begin_benchmark(self):
+    def begin_benchmark(self, iterations: int):
+        if iterations <= 0:
+            raise ValueError("Iterations count cannot be lower than 1.")
+        ITEMS_PER_REQUEST = 100
         print("Beginning benchmark...")
-        songs: List[Song] = self.__fetch_entries()
-        for service in self._services:
+        for _ in range(iterations):
+            songs: List[Song] = self.__fetch_entries(ITEMS_PER_REQUEST, 1)
             print(
-                "Benchmarking {provider} provider...".format(
-                    provider=self.__get_provider(service)
-                )
+                "Benchmarking for {items_count} items.".format(items_count=len(songs))
             )
-            self.__benchmark_creation(service, songs)
-            self.__benchmark_fetch(service)
-            self.__benchmark_delete(service)
+            for service in self._services:
+                print(
+                    "Benchmarking {provider} provider...".format(
+                        provider=self.__get_provider(service)
+                    )
+                )
+                self.__benchmark_creation(service, songs)
+                self.__benchmark_fetch(service)
+                self.__benchmark_delete(service)
+                print("Done.")
             print("Done.")
 
     def __benchmark_creation(self, service: SongService, songs: List[Song]) -> None:
@@ -36,7 +44,8 @@ class Benchmark:
         end = self.__get_current_microseconds_time()
         result = self.__calculate_elapsed_time(start, end)
         self._results.setdefault(
-            "Creation-provider-{0}".format(self.__get_provider(service)), result
+            "Creation-provider-{0}".format(self.__get_provider(service)),
+            result,
         )
         print("Done.")
 
@@ -80,6 +89,20 @@ class Benchmark:
     def __get_provider(self, service: SongService) -> str:
         return service.get_conn().get_db_name()
 
-    def __fetch_entries(self) -> List[Song]:
+    def __fetch_entries(self, results: int, page: int) -> List[Song]:
+        if page <= 0:
+            raise ValueError("Page cannot be lower than 1.")
+        if results <= 0:
+            raise ValueError("Results count cannot be lower than 1.")
         print("Fetching entries...")
-        return SongsUtil.fetch_songs(100, 1)
+        total_fetched: int = 0
+        fetched_songs: List[Song] = []
+        while total_fetched >= results:
+            res: List[Song] = SongsUtil.fetch_songs(100, page)
+            # Quitting in case the API returns no other elements (avoiding infinite loop)
+            if len(res) == 0:
+                break
+            fetched_songs += res
+            total_fetched += len(res)
+            page += 1
+        return fetched_songs
