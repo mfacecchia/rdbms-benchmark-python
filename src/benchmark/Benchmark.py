@@ -20,7 +20,7 @@ class Benchmark:
         ITEMS_PER_REQUEST = 100
         print("Beginning benchmark...")
         for _ in range(iterations):
-            songs: List[Song] = self.__fetch_entries(ITEMS_PER_REQUEST, 1)
+            songs: List[Song] = self.__fetch_entries(ITEMS_PER_REQUEST * 1, 1)
             print(
                 "Benchmarking for {items_count} items.".format(items_count=len(songs))
             )
@@ -94,15 +94,13 @@ class Benchmark:
         if results <= 0:
             raise ValueError("Results count cannot be lower than 1.")
         print("Fetching entries...")
-        total_fetched: int = 0
         fetched_songs: List[Song] = []
-        while total_fetched >= results:
+        while len(fetched_songs) < results:
             res: List[Song] = SongsUtil.fetch_songs(100, page)
             # Quitting in case the API returns no other elements (avoiding infinite loop)
             if len(res) == 0:
                 break
             fetched_songs += res
-            total_fetched += len(res)
             page += 1
         return fetched_songs
 
