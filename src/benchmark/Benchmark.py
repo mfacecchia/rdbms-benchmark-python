@@ -1,5 +1,5 @@
 from time import perf_counter
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from models.Song import Song
 from service.SongService import SongService
@@ -30,47 +30,46 @@ class Benchmark:
                         provider=self.__get_provider(service)
                     )
                 )
-                self.__benchmark_creation(service, songs)
-                self.__benchmark_fetch(service)
-                self.__benchmark_delete(service)
+                datasource = self.__get_provider(service)
+                result = self.__benchmark_creation(service, songs)
+                self.__store_operation_results(
+                    "Creation", len(songs), datasource, result
+                )
+                result = self.__benchmark_fetch(service)
+                self.__store_operation_results("Fetch", len(songs), datasource, result)
+                result = self.__benchmark_delete(service)
+                self.__store_operation_results("Delete", len(songs), datasource, result)
                 print("Done.")
             print("Done.")
 
-    def __benchmark_creation(self, service: SongService, songs: List[Song]) -> None:
+    def __benchmark_creation(self, service: SongService, songs: List[Song]) -> float:
         print("Adding entries...")
         start = self.__get_current_microseconds_time()
         for song in songs:
             service.save(song)
         end = self.__get_current_microseconds_time()
         result = self.__calculate_elapsed_time(start, end)
-        self._results.setdefault(
-            "Creation-provider-{0}".format(self.__get_provider(service)),
-            result,
-        )
         print("Done.")
+        return result
 
-    def __benchmark_delete(self, service: SongService) -> None:
+    def __benchmark_delete(self, service: SongService) -> float:
         print("Deleting entries...")
         start = self.__get_current_microseconds_time()
         service.delete_all()
         end = self.__get_current_microseconds_time()
         result = self.__calculate_elapsed_time(start, end)
-        self._results.setdefault(
-            "Deletion-provider-{0}".format(self.__get_provider(service)), result
-        )
         print("Done.")
+        return result
 
-    def __benchmark_fetch(self, service: SongService) -> None:
+    def __benchmark_fetch(self, service: SongService) -> float:
         print("Fetching entries...")
         start = self.__get_current_microseconds_time()
         entries = service.find_all()
         end = self.__get_current_microseconds_time()
         result = self.__calculate_elapsed_time(start, end)
-        self._results.setdefault(
-            "Fetch-provider-{0}".format(self.__get_provider(service)), result
-        )
         print("Done.")
         print("Fetched {0} entries".format(len(entries)))
+        return result
 
     def __get_current_microseconds_time(self) -> float:
         return perf_counter()
@@ -106,3 +105,13 @@ class Benchmark:
             total_fetched += len(res)
             page += 1
         return fetched_songs
+
+    def __store_operation_results(
+        self, operation_name: str, items_count: int, datasource: str, result: Any
+    ) -> None:
+        self._results.setdefault(
+            "{operation}-{items_count}-items-provider-{provider}".format(
+                operation=operation_name, items_count=items_count, provider=datasource
+            ),
+            result,
+        )
