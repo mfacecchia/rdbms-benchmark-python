@@ -10,7 +10,7 @@ class Cli:
     """
 
     @staticmethod
-    def get_argument(flag: str):
+    def get_argument(flag: str, required: bool):
         """
         Takes an argument from the command line followed by the passed `flag`
 
@@ -26,4 +26,6 @@ class Cli:
                     return argv[i + 1]
                 except IndexError:
                     raise ValueError(f"Invalid value for the required {flag} flag.")
-        raise ValueError("Flag {flag} not provided.")
+        if required is True:
+            raise ValueError("Flag {flag} not provided.")
+        return None
