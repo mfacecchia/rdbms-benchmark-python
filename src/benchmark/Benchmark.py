@@ -19,8 +19,8 @@ class Benchmark:
             raise ValueError("Iterations count cannot be lower than 1.")
         ITEMS_PER_REQUEST = 100
         print("Beginning benchmark...")
-        for _ in range(iterations):
-            songs: List[Song] = self.__fetch_entries(ITEMS_PER_REQUEST * 1, 1)
+        for i in range(iterations):
+            songs: List[Song] = self.__fetch_entries(ITEMS_PER_REQUEST * i + 1, 1)
             print(
                 "Benchmarking for {items_count} items.".format(items_count=len(songs))
             )
