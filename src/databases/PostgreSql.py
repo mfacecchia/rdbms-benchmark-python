@@ -5,6 +5,7 @@ from psycopg.rows import TupleRow
 from psycopg.sql import Composed
 
 from ctyping.postgresql import TPostgreSqlConnection
+from utils.Environment import Environment
 
 from .DatabaseConnection import DatabaseConnection
 
@@ -37,7 +38,12 @@ class PostgreSql(DatabaseConnection[TPostgreSqlConnection]):
     def connect(self) -> TPostgreSqlConnection:
         if self._conn is None or self._conn.closed:
             self._conn = connect(
-                dbname="rdbms_benchmark", user="feis._.", autocommit=True
+                dbname="rdbms_benchmark",
+                autocommit=True,
+                host=Environment.get_environment_variable("POSTGRES_HOST"),
+                port=Environment.get_environment_variable("POSTGRES_PORT"),
+                user=Environment.get_environment_variable("POSTGRES_USER"),
+                password=Environment.get_environment_variable("POSTGRES_PASSWORD"),
             )
         return self._conn
 

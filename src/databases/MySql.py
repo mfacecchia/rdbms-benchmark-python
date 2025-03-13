@@ -4,6 +4,7 @@ import mysql.connector
 from mysql.connector.types import RowItemType, RowType
 
 from ctyping.mysql import TMySqlConnection
+from utils.Environment import Environment
 
 from .DatabaseConnection import DatabaseConnection
 
@@ -36,9 +37,10 @@ class MySql(DatabaseConnection[TMySqlConnection]):
     def connect(self) -> TMySqlConnection:
         if self._conn is None or self._conn.is_connected:
             self._conn = mysql.connector.connect(
-                host="localhost",
-                port="3306",
-                user="root",
+                host=Environment.get_environment_variable("MYSQL_HOST"),
+                port=Environment.get_environment_variable("MYSQL_PORT"),
+                user=Environment.get_environment_variable("MYSQL_USER"),
+                password=Environment.get_environment_variable("MYSQL_PASSWORD"),
                 database="rdbms_benchmark",
                 autocommit=True,
             )
