@@ -7,7 +7,7 @@ Just some RDBMSs benchmarks based on simple CRUD operations (but in Python)
 - [Built In - Technologies](#built-in---technologies)
 
 ## Requirements
-- [MySQl](https://www.mysql.com/downloads/)
+- [MySQL](https://www.mysql.com/downloads/)
 - [PostgreSQL](https://www.postgresql.org/download/)
 - [Python 3.12](https://www.python.org/downloads/)
 
