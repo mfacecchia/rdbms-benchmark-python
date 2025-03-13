@@ -22,7 +22,9 @@ class Benchmark:
         for i in range(iterations):
             songs: List[Song] = self.__fetch_entries(ITEMS_PER_REQUEST * i + 1, 1)
             print(
-                "Benchmarking for {items_count} items.".format(items_count=len(songs))
+                "\n----Benchmarking for {items_count} items.----".format(
+                    items_count=len(songs)
+                )
             )
             for service in self._services:
                 print(
@@ -40,7 +42,6 @@ class Benchmark:
                 result = self.__benchmark_delete(service)
                 self.__store_operation_results("Delete", len(songs), datasource, result)
                 print("Done.")
-            print("Done.")
 
     def __benchmark_creation(self, service: SongService, songs: List[Song]) -> float:
         print("Adding entries...")
